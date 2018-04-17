@@ -123,7 +123,7 @@ class ERC20_Token extends Contract
 
         $result = $this->call("balanceOf", [$address]);
         $balance = $result["balance"] ?? null;
-        if (!is_int($balance)) {
+        if (!is_int($balance) && !is_float($balance)) {
             throw new ERC20Exception(
                 sprintf('Failed to retrieve ERC20 token balance of address "%s..."', substr($address, 0, 8))
             );
