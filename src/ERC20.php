@@ -42,7 +42,7 @@ class ERC20
      */
     public function reset(): self
     {
-        $this->abiPath = sprintf('%1$s%data%2$serc20.abi', dirname(__FILE__, 1), DIRECTORY_SEPARATOR);
+        $this->abiPath = sprintf('%1$s%2$sdata%2$serc20.abi', dirname(__FILE__, 2), DIRECTORY_SEPARATOR);
         return $this;
     }
 
