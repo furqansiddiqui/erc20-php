@@ -139,6 +139,27 @@ class ERC20_Token extends Contract
     }
 
     /**
+     * @return string
+     * @throws ERC20Exception
+     * @throws \EthereumRPC\Exception\ConnectionException
+     * @throws \EthereumRPC\Exception\ContractABIException
+     * @throws \EthereumRPC\Exception\GethException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function totalSupply(): string
+    {
+        $result = $this->call("totalSupply");
+        $totalSupply = $result[0] ?? null;
+        if (!is_float($totalSupply) && !is_int($totalSupply)) {
+            throw new ERC20Exception('Failed to retrieve total supply amount');
+        }
+
+        $totalSupply = number_format($totalSupply, 0, ".", "");
+        $scale = $this->decimals();
+        return bcdiv($totalSupply, bcpow("10", strval($scale), 0), $scale);
+    }
+
+    /**
      * @param string $in
      * @return string
      */
