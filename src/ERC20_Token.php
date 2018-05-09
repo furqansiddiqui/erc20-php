@@ -160,6 +160,55 @@ class ERC20_Token extends Contract
     }
 
     /**
+     * @param string $to
+     * @param string $amount
+     * @return bool
+     * @throws ERC20Exception
+     * @throws \EthereumRPC\Exception\ConnectionException
+     * @throws \EthereumRPC\Exception\ContractABIException
+     * @throws \EthereumRPC\Exception\GethException
+     * @throws \HttpClient\Exception\HttpClientException
+     */
+    public function transfer(string $to, string $amount): bool
+    {
+        if (!Validator::Address($to)) {
+            throw new ERC20Exception('Invalid transfer to address');
+        }
+
+        if (!Validator::BcAmount($amount)) {
+            throw new ERC20Exception('Invalid transaction amount');
+        }
+
+        $result = $this->call("transfer", [$to, $amount]);
+        $transfer = $result[0] ?? null;
+        if (!is_bool($transfer)) {
+            throw new ERC20Exception('Failed to retrieve transfer response');
+        }
+
+        return $transfer;
+    }
+
+    /**
+     * @param string $to
+     * @param string $amount
+     * @return string
+     * @throws ERC20Exception
+     * @throws \EthereumRPC\Exception\ContractABIException
+     */
+    public function encodedTransferData(string $to, string $amount): string
+    {
+        if (!Validator::Address($to)) {
+            throw new ERC20Exception('Invalid transfer to address');
+        }
+
+        if (!Validator::BcAmount($amount)) {
+            throw new ERC20Exception('Invalid transaction amount');
+        }
+
+        return $this->abi()->encodeCall("transfer", [$to, $amount]);
+    }
+
+    /**
      * @param string $in
      * @return string
      */
