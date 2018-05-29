@@ -193,7 +193,10 @@ class ERC20_Token extends Contract
      * @param string $amount
      * @return string
      * @throws ERC20Exception
+     * @throws \EthereumRPC\Exception\ConnectionException
      * @throws \EthereumRPC\Exception\ContractABIException
+     * @throws \EthereumRPC\Exception\GethException
+     * @throws \HttpClient\Exception\HttpClientException
      */
     public function encodedTransferData(string $to, string $amount): string
     {
@@ -205,6 +208,7 @@ class ERC20_Token extends Contract
             throw new ERC20Exception('Invalid transaction amount');
         }
 
+        $amount = bcmul($amount, bcpow("10", strval($this->decimals()), 0), 0);
         return $this->abi()->encodeCall("transfer", [$to, $amount]);
     }
 
