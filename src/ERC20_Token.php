@@ -154,7 +154,6 @@ class ERC20_Token extends Contract
             throw new ERC20Exception('Failed to retrieve total supply amount');
         }
 
-        $totalSupply = number_format($totalSupply, 0, ".", "");
         $scale = $this->decimals();
         return bcdiv($totalSupply, bcpow("10", strval($scale), 0), $scale);
     }
