@@ -122,14 +122,14 @@ class ERC20_Token extends Contract
         }
 
         $result = $this->call("balanceOf", [$address]);
+        /** @var string $balance */
         $balance = $result["balance"] ?? null;
-        if (!is_int($balance) && !is_float($balance)) {
+        if (!Validator::BcAmount($balance)) {
             throw new ERC20Exception(
                 sprintf('Failed to retrieve ERC20 token balance of address "%s..."', substr($address, 0, 8))
             );
         }
 
-        $balance = number_format($balance, 0, '.', ''); // convert to string
         if (!$scaled) {
             return $balance;
         }
@@ -150,7 +150,7 @@ class ERC20_Token extends Contract
     {
         $result = $this->call("totalSupply");
         $totalSupply = $result[0] ?? null;
-        if (!is_float($totalSupply) && !is_int($totalSupply)) {
+        if (!Validator::BcAmount($totalSupply)) {
             throw new ERC20Exception('Failed to retrieve total supply amount');
         }
 
