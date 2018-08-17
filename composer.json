@@ -6,7 +6,7 @@
   "license": "MIT",
   "require": {
     "php": ">=7.1.0",
-    "furqansiddiqui/ethereum-rpc": "dev-master"
+    "furqansiddiqui/ethereum-rpc": ">=0.1.1"
   },
   "autoload": {
     "psr-4": {
