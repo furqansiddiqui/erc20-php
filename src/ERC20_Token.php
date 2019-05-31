@@ -97,7 +97,7 @@ class ERC20_Token extends Contract
 
         $result = $this->call("decimals");
         $scale = intval($result[0] ?? null);
-        if (!$scale) {
+        if (is_null($scale)) {
             throw new ERC20Exception('Failed to retrieve ERC20 token decimals/scale value');
         }
 
