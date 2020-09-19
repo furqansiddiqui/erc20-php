@@ -15,7 +15,7 @@
   "license": "MIT",
   "require": {
     "php-64bit": "^7.4",
-    "furqansiddiqui/ethereum-php": "^0.1.0"
+    "furqansiddiqui/ethereum-php": "^0.1.1"
   },
   "autoload": {
     "psr-4": {
