@@ -58,7 +58,7 @@ class ERC20
     }
 
     /**
-     * @param $contractAddress
+     * @param Account|string $contractAddress
      * @return ERC20_Token
      * @throws ERC20TokenException
      */
