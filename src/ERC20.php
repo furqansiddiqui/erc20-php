@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * This file is a part of "furqansiddiqui/erc20-php" package.
  * https://github.com/furqansiddiqui/erc20-php
  *
- * Copyright (c) 2020 Furqan A. Siddiqui <hello@furqansiddiqui.com>
+ * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code or visit following link:
@@ -12,58 +12,69 @@
 
 declare(strict_types=1);
 
-namespace ERC20;
+namespace FurqanSiddiqui\Ethereum\ERC20;
 
-use EthereumRPC\EthereumRPC;
+use FurqanSiddiqui\Ethereum\Accounts\Account;
+use FurqanSiddiqui\Ethereum\Contracts\ABI_Factory;
+use FurqanSiddiqui\Ethereum\Contracts\Contract_ABI;
+use FurqanSiddiqui\Ethereum\ERC20\Exception\ERC20TokenException;
+use FurqanSiddiqui\Ethereum\Ethereum;
+use FurqanSiddiqui\Ethereum\Exception\AccountsException;
+use FurqanSiddiqui\Ethereum\RPC\AbstractRPCClient;
 
 /**
  * Class ERC20
- * @package ERC20
+ * @package FurqanSiddiqui\Ethereum\ERC20
  */
 class ERC20
 {
-    /** @var EthereumRPC */
-    private $client;
-    /** @var string */
-    private $abiPath;
+    /** @var Ethereum */
+    private Ethereum $eth;
+    /** @var Contract_ABI */
+    private Contract_ABI $erc20ABI;
+    /** @var AbstractRPCClient|null */
+    private ?AbstractRPCClient $rpcClient = null;
 
     /**
      * ERC20 constructor.
-     * @param EthereumRPC $ethereumRPC
+     * @param Ethereum $eth
+     * @throws \FurqanSiddiqui\Ethereum\Exception\ContractsException
      */
-    public function __construct(EthereumRPC $ethereumRPC)
+    public function __construct(Ethereum $eth)
     {
-        $this->client = $ethereumRPC;
-        $this->reset();
+        $this->eth = $eth;
+        $abiFilePath = dirname(__FILE__, 2) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "erc20-abi.json";
+        $this->erc20ABI = (new ABI_Factory())->fromFile($abiFilePath);
     }
 
     /**
-     * @return ERC20
+     * @param AbstractRPCClient $rpcClient
+     * @return $this
      */
-    public function reset(): self
+    public function useRPCClient(AbstractRPCClient $rpcClient): self
     {
-        $this->abiPath = sprintf('%1$s%2$sdata%2$serc20.abi', dirname(__FILE__, 2), DIRECTORY_SEPARATOR);
+        $this->rpcClient = $rpcClient;
         return $this;
     }
 
     /**
-     * @param string $path
-     * @return ERC20
-     */
-    public function abiPath(?string $path = null): self
-    {
-        $this->abiPath = $path;
-        return $this;
-    }
-
-    /**
-     * @param string $contractAddress
+     * @param $contractAddress
      * @return ERC20_Token
-     * @throws \EthereumRPC\Exception\ContractsException
+     * @throws ERC20TokenException
      */
-    public function token(string $contractAddress): ERC20_Token
+    public function token($contractAddress): ERC20_Token
     {
-        $contract = $this->client->contract()->load($this->abiPath);
-        return new ERC20_Token($this->client, $contract->abi(), $contractAddress);
+        if (is_string($contractAddress)) {
+            try {
+                $contractAddress = $this->eth->getAccount($contractAddress);
+            } catch (AccountsException $e) {
+            }
+        }
+
+        if (!$contractAddress instanceof Account) {
+            throw new ERC20TokenException('First argument must be valid contract address');
+        }
+
+        return new ERC20_Token($this->erc20ABI->abi(), $contractAddress, $this->rpcClient);
     }
 }
