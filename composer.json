@@ -1,25 +1,25 @@
 {
   "name": "furqansiddiqui/erc20-php",
   "type": "library",
-  "description": "Interact with any ERC20 standard Ethereum token",
+  "description": "Interact with any ERC20 standard/backward-compatible Ethereum token",
   "keywords": [
     "erc20",
-    "token",
-    "tokens",
+    "erc223",
     "ethereum",
     "geth",
+    "infura",
+    "infura.io",
     "ethereum-go",
     "eth"
   ],
   "license": "MIT",
   "require": {
-    "php": ">=7.1.0",
-    "ext-bcmath": "*",
-    "furqansiddiqui/ethereum-rpc": "^0.1.5"
+    "php-64bit": "^7.4",
+    "furqansiddiqui/ethereum-php": "^0.1.0"
   },
   "autoload": {
     "psr-4": {
-      "ERC20\\": [
+      "FurqanSiddiqui\\Ethereum\\ERC20\\": [
         "src"
       ]
     }
