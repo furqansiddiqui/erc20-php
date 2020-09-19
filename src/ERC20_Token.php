@@ -46,6 +46,17 @@ class ERC20_Token extends Contract
     }
 
     /**
+     * Clears cached values
+     */
+    public function clearCached(): void
+    {
+        $this->_name = null;
+        $this->_symbol = null;
+        $this->_decimals = null;
+        $this->_totalSupply = null;
+    }
+
+    /**
      * @return array
      * @throws ERC20TokenException
      * @throws \FurqanSiddiqui\Ethereum\Exception\ContractsException
