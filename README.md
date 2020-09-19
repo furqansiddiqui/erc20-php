@@ -11,7 +11,7 @@ as well as communication with Ethereum node using RPC/API, resulting in pure sim
 Ethereum Node | Status
 --- | ---
 Geth / Ethereum-Go RPC | :heavy_check_mark:
-Infuri.IO | :heavy_check_mark:
+Infura.IO | :heavy_check_mark:
 
 ## Demo
 
