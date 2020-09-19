@@ -198,7 +198,7 @@ class ERC20_Token extends Contract
         }
 
         $scale = $this->decimals();
-        $amount = $amount->mul(pow(10, $scale), $scale);
+        $amount = $amount->mul(pow(10, $scale), 0);
         return $this->abi()->encodeCall("transfer", [$payee->getAddress(), $amount->value()]);
     }
 }
