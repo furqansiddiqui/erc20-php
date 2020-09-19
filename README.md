@@ -5,48 +5,50 @@ Interact with any ERC20 standard Ethereum token
 This package is ultimate response to historic issue of no native API being available to PHP developers to interact with 
 ERC20 tokens (i.e. web3js contracts API).
 
-This package communicates directly with `Geth` using `RPC` ([furqansiddiqui/ethereum-rpc](https://github.com/furqansiddiqui/ethereum-rpc/)) and performs all `ABI` encoding and decoding in background, 
-resulting in pure simple and easy to use API for developers to perform all ERC20 standard operations.
+This package relies on [furqansiddiqui/ethereum-php](https://github.com/furqansiddiqui/ethereum-php/) package to perform all `ABI` encoding and decoding, 
+as well as communication with Ethereum node using RPC/API, resulting in pure simple and easy to use API for developers to perform all ERC20 standard operations.
+
+Ethereum Node | Status
+--- | ---
+Geth / Ethereum-Go RPC | :heavy_check_mark:
+Infuri.IO | :heavy_check_mark:
 
 ## Demo
 
-* A random ERC20 token was picked from a list, given contract address `0xd26114cd6EE289AccF82350c8d8487fedB8A0C07`
+* Testing interaction with `Thether USD` / `USDT` ERC20 smart contract:
 
 `````php
-$geth = new EthereumRPC('127.0.0.1', 8545);
-$erc20 = new \ERC20\ERC20($geth);
-$token = $erc20->token('0xd26114cd6EE289AccF82350c8d8487fedB8A0C07');
+$eth = new \FurqanSiddiqui\Ethereum\Ethereum();
+$infura = new \FurqanSiddiqui\Ethereum\RPC\InfuraAPI($eth, "PROJECT-ID", "PROJECT-SECRET");
+$infura->ignoreSSL(); // In case Infura.IO SSL errors
 
-var_dump($token->name());
-var_dump($token->symbol());
-var_dump($token->decimals());
+$erc20 = new \FurqanSiddiqui\Ethereum\ERC20\ERC20($eth);
+$erc20->useRPCClient($infura);
+
+$usdt = $erc20->token("0xdac17f958d2ee523a2206206994597c13d831ec7");
+var_dump($usdt->name());
+var_dump($usdt->symbol());
+var_dump($usdt->decimals());
+var_dump($usdt->totalSupply());
+var_dump($usdt->balanceOf($eth->getAccount("ETHEREUM-ADDRESS")));
 `````
 
 Result:
 
 ```
-string(8) "OMGToken"
-string(3) "OMG"
-int(18)
+string(9) "TetherUSD"
+string(4) "USDT"
+int(6)
+string(18) "10034907979.686358"
+string(12) "53150.417979"
 ```
+
+### Prerequisites
+
+* **PHP** >= 7.4+
+* **Ethereum PHP lib** ([furqansiddiqui/ethereum-php](https://github.com/furqansiddiqui/ethereum-php/)) > 0.1.1
+
 
 ## Installation
 
 `composer require furqansiddiqui/erc20-php`
-
-### Prerequisites
-
-* **PHP** >= 7.1+
-* **Ethereum RPC client** ([furqansiddiqui/ethereum-rpc](https://github.com/furqansiddiqui/ethereum-rpc/)) > 1.0
-
-## ABI
-
-A standard ERC20 ABI file is included in package residing in "data" directory.
-
-Path to a custom ABI may be specified when constructing ERC20 token object.
-
-`````php
-$geth = new EthereumRPC('127.0.0.1', 8545);
-$erc20 = new \ERC20\ERC20($geth);
-$erc20->abiPath('/path/to/abi.json');
-`````
