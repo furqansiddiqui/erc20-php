@@ -183,6 +183,26 @@ class ERC20_Token extends Contract
     }
 
     /**
+     * @param Account $owner
+     * @param Account $spender
+     * @param bool $scaled
+     * @return string
+     * @throws ERC20TokenException
+     * @throws \FurqanSiddiqui\Ethereum\Exception\ContractsException
+     * @throws \FurqanSiddiqui\Ethereum\Exception\RPCException
+     */
+    public function allowance(Account $owner, Account $spender, bool $scaled = true): string
+    {
+        $result = $this->call("allowance", [$owner->getAddress(), $spender->getAddress()]);
+        $remaining = $result["remaining"] ?? null;
+        if (!is_string($remaining) || !preg_match('/^[0-9]+$/', $remaining)) {
+            throw new ERC20TokenException('Failed to retrieve ERC20 token allowance');
+        }
+
+        return $scaled ? $this->decimalValue($remaining, $this->decimals()) : $remaining;
+    }
+
+    /**
      * @param Account $payee
      * @param string $amount
      * @return string
