@@ -1,5 +1,5 @@
 {
-  "name": "furqansiddiqui/erc20-php",
+  "name": "terranc/erc20-php",
   "type": "library",
   "description": "Interact with any ERC20 standard/backward-compatible Ethereum token",
   "keywords": [
@@ -7,6 +7,8 @@
     "erc223",
     "ethereum",
     "geth",
+    "alchemy",
+    "alchemy.com",
     "infura",
     "infura.io",
     "ethereum-go",
@@ -15,7 +17,7 @@
   "license": "MIT",
   "require": {
     "php-64bit": "^7.4",
-    "furqansiddiqui/ethereum-php": "^0.1.20"
+    "terranc/ethereum-php": "^0.1.20"
   },
   "autoload": {
     "psr-4": {
