@@ -17,7 +17,7 @@
   "license": "MIT",
   "require": {
     "php-64bit": "^7.4",
-    "terranc/ethereum-php": "^0.1.22"
+    "terranc/ethereum-php": "^0.1.23"
   },
   "autoload": {
     "psr-4": {
