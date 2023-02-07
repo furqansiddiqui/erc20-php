@@ -14,13 +14,9 @@ declare(strict_types=1);
 
 namespace FurqanSiddiqui\Ethereum\ERC20;
 
-use FurqanSiddiqui\Ethereum\Accounts\Account;
-use FurqanSiddiqui\Ethereum\Contracts\ABI_Factory;
-use FurqanSiddiqui\Ethereum\Contracts\Contract_ABI;
-use FurqanSiddiqui\Ethereum\ERC20\Exception\ERC20TokenException;
-use FurqanSiddiqui\Ethereum\Ethereum;
-use FurqanSiddiqui\Ethereum\Exception\AccountsException;
-use FurqanSiddiqui\Ethereum\RPC\AbstractRPCClient;
+use FurqanSiddiqui\Ethereum\Buffers\EthereumAddress;
+use FurqanSiddiqui\Ethereum\Contracts\Contract;
+use FurqanSiddiqui\Ethereum\RPC\Abstract_RPC_Client;
 
 /**
  * Class ERC20
@@ -28,53 +24,23 @@ use FurqanSiddiqui\Ethereum\RPC\AbstractRPCClient;
  */
 class ERC20
 {
-    /** @var Ethereum */
-    private Ethereum $eth;
-    /** @var Contract_ABI */
-    private Contract_ABI $erc20ABI;
-    /** @var AbstractRPCClient|null */
-    private ?AbstractRPCClient $rpcClient = null;
-
     /**
-     * ERC20 constructor.
-     * @param Ethereum $eth
-     * @throws \FurqanSiddiqui\Ethereum\Exception\ContractsException
+     * @param \FurqanSiddiqui\Ethereum\RPC\Abstract_RPC_Client $rpcClient
+     * @param \FurqanSiddiqui\Ethereum\Contracts\Contract $abi
      */
-    public function __construct(Ethereum $eth)
+    public function __construct(
+        public readonly Abstract_RPC_Client $rpcClient,
+        public readonly Contract            $abi = new BaseERC20Contract(),
+    )
     {
-        $this->eth = $eth;
-        $abiFilePath = dirname(__FILE__, 2) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "erc20-abi.json";
-        $this->erc20ABI = (new ABI_Factory())->fromFile($abiFilePath);
     }
 
     /**
-     * @param AbstractRPCClient $rpcClient
-     * @return $this
+     * @param \FurqanSiddiqui\Ethereum\Buffers\EthereumAddress $address
+     * @return \FurqanSiddiqui\Ethereum\ERC20\ERC20_Token
      */
-    public function useRPCClient(AbstractRPCClient $rpcClient): self
+    public function deployedAt(EthereumAddress $address): ERC20_Token
     {
-        $this->rpcClient = $rpcClient;
-        return $this;
-    }
-
-    /**
-     * @param Account|string $contractAddress
-     * @return ERC20_Token
-     * @throws ERC20TokenException
-     */
-    public function token($contractAddress): ERC20_Token
-    {
-        if (is_string($contractAddress)) {
-            try {
-                $contractAddress = $this->eth->getAccount($contractAddress);
-            } catch (AccountsException $e) {
-            }
-        }
-
-        if (!$contractAddress instanceof Account) {
-            throw new ERC20TokenException('First argument must be valid contract address');
-        }
-
-        return new ERC20_Token($this->erc20ABI->abi(), $contractAddress, $this->rpcClient);
+        return new ERC20_Token($this->abi, $address, $this->rpcClient);
     }
 }
