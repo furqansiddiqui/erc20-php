@@ -16,7 +16,7 @@
   "require": {
     "php-64bit": "^8.1",
     "ext-bcmath": "*",
-    "furqansiddiqui/ethereum-php": "^0.2.1"
+    "furqansiddiqui/ethereum-php": "^0.3.7"
   },
   "autoload": {
     "psr-4": {

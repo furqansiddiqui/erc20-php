@@ -22,15 +22,15 @@ use FurqanSiddiqui\Ethereum\RPC\Abstract_RPC_Client;
  * Class ERC20
  * @package FurqanSiddiqui\Ethereum\ERC20
  */
-class ERC20
+readonly class ERC20
 {
     /**
      * @param \FurqanSiddiqui\Ethereum\RPC\Abstract_RPC_Client $rpcClient
      * @param \FurqanSiddiqui\Ethereum\Contracts\Contract $abi
      */
     public function __construct(
-        public readonly Abstract_RPC_Client $rpcClient,
-        public readonly Contract            $abi = new BaseERC20Contract(),
+        public Abstract_RPC_Client $rpcClient,
+        public Contract            $abi = new BaseERC20Contract(),
     )
     {
     }

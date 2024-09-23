@@ -22,16 +22,12 @@ use FurqanSiddiqui\Ethereum\ERC20\Exception\ERC20TokenException;
  * Class ERC20_Token
  * @package ERC20
  */
-class ERC20_Token extends DeployedContract
+readonly class ERC20_Token extends DeployedContract
 {
-    /** @var string|null */
-    private ?string $_name = null;
-    /** @var string|null */
-    private ?string $_symbol = null;
-    /** @var int|null */
-    private ?int $_decimals = null;
-    /** @var string|null */
-    private ?string $_totalSupply = null;
+    protected string $name;
+    protected string $symbol;
+    protected int $decimals;
+    protected string $totalSupply;
 
     /**
      * @return string
@@ -40,7 +36,7 @@ class ERC20_Token extends DeployedContract
      */
     public function name(): string
     {
-        return $this->constantCall("name", "_name", fn(string $name): string => $this->cleanOutputASCII($name));
+        return $this->constantCall("name", "name", fn(string $name): string => $this->cleanOutputASCII($name));
     }
 
     /**
@@ -50,7 +46,7 @@ class ERC20_Token extends DeployedContract
      */
     public function symbol(): string
     {
-        return $this->constantCall("symbol", "_symbol", fn(string $symbol): string => $this->cleanOutputASCII($symbol));
+        return $this->constantCall("symbol", "symbol", fn(string $symbol): string => $this->cleanOutputASCII($symbol));
     }
 
     /**
@@ -60,7 +56,7 @@ class ERC20_Token extends DeployedContract
      */
     public function decimals(): int
     {
-        return $this->constantCall("decimals", "_decimals", fn(string $dec): int => intval($dec));
+        return $this->constantCall("decimals", "decimals", fn(string $dec): int => intval($dec));
     }
 
     /**
@@ -70,7 +66,7 @@ class ERC20_Token extends DeployedContract
      */
     public function totalSupply(): string
     {
-        return $this->constantCall("totalSupply", "_totalSupply", null);
+        return $this->constantCall("totalSupply", "totalSupply", null);
     }
 
     /**
@@ -158,17 +154,6 @@ class ERC20_Token extends DeployedContract
     public function __debugInfo(): array
     {
         return $this->toArray();
-    }
-
-    /**
-     * @return void
-     */
-    public function purgeCached(): void
-    {
-        $this->_name = null;
-        $this->_symbol = null;
-        $this->_decimals = null;
-        $this->_totalSupply = null;
     }
 
     /**
