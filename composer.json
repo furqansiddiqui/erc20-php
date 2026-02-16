@@ -7,20 +7,18 @@
     "erc223",
     "ethereum",
     "geth",
-    "infura",
-    "infura.io",
     "ethereum-go",
     "eth"
   ],
   "license": "MIT",
   "require": {
-    "php-64bit": "^8.1",
+    "php-64bit": "^8.5",
     "ext-bcmath": "*",
-    "furqansiddiqui/ethereum-php": "^0.3.7"
+    "furqansiddiqui/ethereum-php": "dev-main"
   },
   "autoload": {
     "psr-4": {
-      "FurqanSiddiqui\\Ethereum\\ERC20\\": [
+      "FurqanSiddiqui\\Ethereum\\Erc20\\": [
         "src"
       ]
     }
