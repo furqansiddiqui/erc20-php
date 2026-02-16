@@ -14,12 +14,19 @@
   "require": {
     "php-64bit": "^8.5",
     "ext-bcmath": "*",
-    "furqansiddiqui/ethereum-php": "dev-main"
+    "furqansiddiqui/ethereum-php": "^0.4.0"
   },
   "autoload": {
     "psr-4": {
       "FurqanSiddiqui\\Ethereum\\Erc20\\": [
         "src"
+      ]
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FurqanSiddiqui\\Ethereum\\Erc20\\Tests\\": [
+        "tests"
       ]
     }
   },

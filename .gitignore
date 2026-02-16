@@ -3,3 +3,9 @@ vendor/
 workspace/
 composer.phar
 composer.lock
+
+phpunit.phar
+/.phpunit.result.cache
+/coverage/
+/coverage.xml
+/coverage.clover.xml

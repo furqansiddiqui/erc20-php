@@ -1,81 +1,122 @@
-# ERC20 Tokens
+# ERC-20 Token Library for PHP
 
-Interact with any ERC20 standard Ethereum token
+[![Tests](https://github.com/furqansiddiqui/erc20-php/actions/workflows/tests.yml/badge.svg)](https://github.com/furqansiddiqui/erc20-php/actions/workflows/tests.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-This package is ultimate response to historic issue of no native API being available to PHP developers to interact with
-ERC20 tokens (i.e. web3js contracts API).
+A PHP library for interacting with ERC-20 smart contracts on the Ethereum blockchain. This library uses the [ethereum-php](https://github.com/furqansiddiqui/ethereum-php) package for RPC communication and EVM interactions.
 
-This package relies on [furqansiddiqui/ethereum-php](https://github.com/furqansiddiqui/ethereum-php/) package to perform
-all `ABI` encoding and decoding,
-as well as communication with Ethereum node using RPC/API, resulting in pure simple and easy to use API for developers
-to perform all ERC20 standard operations.
+## Features
 
-| Ethereum Node          | Status             |
-|------------------------|--------------------|
-| Geth / Ethereum-Go RPC | :heavy_check_mark: |
-| Infura.IO              | :heavy_check_mark: |
+- Fetch token metadata (name, symbol, decimals, total supply).
+- Retrieve account balances and allowances.
+- Encode data for standard ERC-20 transactions (`transfer`, `transferFrom`, `approve`).
+- Support for custom/extended ERC-20 ABIs.
+- Fully compatible with PHP 8.5+.
 
-## Demo
+## Requirements
 
-* Testing interaction with `Thether USD` / `USDT` ERC20 smart contract:
-
-`````php
-use FurqanSiddiqui\Ethereum\RPC\Infura;
-use FurqanSiddiqui\Ethereum\ERC20\ERC20;
-
-$infura = new Infura("PROJECT-ID", "PROJECT-SECRET");
-$infura->ignoreSSL(); // In case Infura.IO SSL errors (or provide "caRootFile:" to constructor above)
-
-$erc20 = new ERC20($infura);
-$usdt = $erc20->deployedAt("0xdac17f958d2ee523a2206206994597c13d831ec7");
-var_dump($usdt->name());
-var_dump($usdt->symbol());
-var_dump($usdt->decimals());
-var_dump($usdt->totalSupply());
-$balance = $usdt->balanceOf($eth->getAccount("ETHEREUM-ADDRESS"));
-var_dump($balance);
-var_dump($usdt->getScaledValue($balance));
-`````
-
-Result:
-
-```
-string(9) "TetherUSD"
-string(4) "USDT"
-int(6)
-string(18) "32284517903064882"
-string(11) "53150417979"
-string(12) "53150.417979"
-```
-
-## Custom ABI
-
-* Standard/base ERC20 ABI is included in package.
-* To included extended/custom ERC20 ABI (depending on your requirments), use one of the following methods:
-    * Extend [BaseERC20Contract](src/BaseERC20Contract.php) class to define custom ABI functions and events.
-    * Decode your custom ABI JSON file and provide it to constructor:
-
-```php
-use \FurqanSiddiqui\Ethereum\Contracts\Contract;
-
-$customABI  =   Contract::fromArray(json_decode(file_get_contents("YOUR-CUSTOM-ABI.json"), true), true);
-$erc20 = new ERC20(abi: $customABI);
-```
-
-### Scaled Values
-
-Use `getScaledValue` and `fromScaledValue` to convert amounts from/to `uint256`.
-
-### Prerequisites
-
-* **PHP** ^8.1
-* **Ethereum PHP lib** ([furqansiddiqui/ethereum-php](https://github.com/furqansiddiqui/ethereum-php/)) > 0.2.0
+- **PHP:** ^8.5
+- **Extensions:** `openssl`, `gmp`, `bcmath`
 
 ## Installation
 
-`composer require furqansiddiqui/erc20-php`
+Install the package via Composer:
 
-## Changelog
+```bash
+composer require furqansiddiqui/erc20-php
+```
 
-* **0.3.0**: This library alongside several others such
-  as [ethereum-php](https://github.com/furqansiddiqui/ethereum-php/) have been modernised and requires PHP ^8.1.
+## Usage
+
+### Initialization
+
+To start, you need an Ethereum RPC client (e.g., Geth or an Infura/Alchemy endpoint) and the `Erc20` handler.
+
+```php
+use FurqanSiddiqui\Ethereum\Rpc\GethRpc;
+use FurqanSiddiqui\Ethereum\Erc20\Erc20;
+use FurqanSiddiqui\Ethereum\Keypair\EthereumAddress;
+
+$rpc = new GethRpc("https://mainnet.infura.io/v3/YOUR_PROJECT_ID");
+$erc20 = new Erc20($rpc);
+
+// USDC Token Address
+$usdcAddress = new EthereumAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
+$token = $erc20->deployedAt($usdcAddress);
+```
+
+### Token Metadata
+
+```php
+echo "Name: " . $token->name() . PHP_EOL;
+echo "Symbol: " . $token->symbol() . PHP_EOL;
+echo "Decimals: " . $token->decimals() . PHP_EOL;
+echo "Total Supply: " . $token->totalSupply() . PHP_EOL;
+```
+
+### Balances and Allowances
+
+```php
+$userAddress = new EthereumAddress("0x...");
+
+// Get raw balance (uint256)
+$balance = $token->balanceOf($userAddress);
+echo "Raw Balance: " . $balance . PHP_EOL;
+
+// Get allowance
+$spender = new EthereumAddress("0x...");
+$allowance = $token->allowance($userAddress, $spender);
+```
+
+### Encoding Transactions
+
+This library helps you encode the `data` field for Ethereum transactions.
+
+```php
+// Encode a transfer of 100 USDC (USDC has 6 decimals)
+$toAddress = "0x...";
+$amount = 100 * (10 ** 6);
+$data = $token->encodeTransfer($toAddress, $amount);
+
+// You can now use this $data in an 'eth_sendTransaction' or 'eth_sendRawTransaction' call
+```
+
+## Extending for Custom ABIs
+
+If you are dealing with a contract that follows ERC-20 but has additional methods, you can extend `Erc20ContractBase`.
+
+```php
+use FurqanSiddiqui\Ethereum\Erc20\Erc20ContractBase;
+use FurqanSiddiqui\Ethereum\Evm\ContractMethod;
+use FurqanSiddiqui\Ethereum\Evm\ContractMethodType;
+use FurqanSiddiqui\Ethereum\Evm\AbiParam;
+
+class MyCustomTokenAbi extends Erc20ContractBase
+{
+    public function __construct()
+    {
+        parent::__construct();
+        
+        // Add a custom method: burn(uint256)
+        $burn = new ContractMethod(ContractMethodType::Function, "burn", false, false);
+        $burn->appendInput(new AbiParam("uint256", null));
+        $this->append($burn);
+    }
+}
+
+// Usage
+$erc20 = new Erc20($rpc, new MyCustomTokenAbi());
+```
+
+## Testing
+
+The library includes a PHPUnit test suite. To run the tests, ensure you have dependencies installed:
+
+```bash
+composer install
+./vendor/bin/phpunit
+```
+
+## License
+
+This package is open-source software licensed under the [MIT license](LICENSE).
